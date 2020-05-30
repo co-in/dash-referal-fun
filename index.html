@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="jquery.min.js"></script>
+    <script src="qr_code.min.js"></script>
+    <style>
+        div {
+            padding: 10px;
+        }
+
+        button {
+            display: inline;
+
+        }
+
+        input {
+            padding: 5px;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+<div>
+    <span>Сфотографируйтесь на фоне реферального и вашего QR-адреса</span>
+    <button onclick="window.print();">Распечатать</button>
+</div>
+<div>
+    <div id="qxFF"></div>
+    <label>
+        Реферальный DASH адресс
+        <input id="xFF" disabled>
+    </label>
+</div>
+<div>
+    <div id="qx00"></div>
+    <label>
+        Ваш DASH адресс
+        <input id="x00">
+    </label>
+    <div></div>
+    <label>
+        Ваш реферальный адресс
+        <input id="ref" disabled>
+    </label>
+</div>
+<script type="text/javascript">
+    const qs = (function (a) {
+        let b = {};
+
+        for (let i = 0; i < a.length; ++i) {
+            let p = a[i].split('=', 2);
+            b[p[0]] = (p.length === 1) ? '' : decodeURIComponent(p[1].replace(/\+/g, " "));
+        }
+        return b;
+    })(window.location.search.substr(1).split('&'));
+
+    ['x00', 'xFF'].forEach(function (k) {
+
+        const qElm = document.getElementById("q" + k);
+        const iElm = document.getElementById(k);
+        const rElm = document.getElementById("ref");
+
+        const q = new QRCode(qElm, {
+            colorDark: '#0000' + k.replace('x', ''),
+            correctLevel: QRCode.CorrectLevel.H
+        });
+        q.clear();
+
+        iElm.onchange = function () {
+            q.makeCode(this.value);
+            window.history.pushState("", "", '?xFF=' + this.value);
+            rElm.value = window.location.href;
+        };
+
+        if (qs[k]) {
+            console.log(q);
+            iElm.value = qs[k];
+            iElm.dispatchEvent(new Event('change'));
+        }
+
+    });
+</script>
+</body>
+</html>
