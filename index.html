@@ -5,6 +5,7 @@
     <title>Title</title>
     <script src="jquery.min.js"></script>
     <script src="qr_code.min.js"></script>
+    <script src="addressValidator.js"></script>
     <style>
         div {
             padding: 10px;
@@ -69,13 +70,17 @@
         q.clear();
 
         iElm.onchange = function () {
+            console.log(this.value);
+            if(this.value !== '' && !WAValidator.validate(this.value, 'dash')){
+               return alert('Неправильно введенный адресс');
+            }
+
             q.makeCode(this.value);
             window.history.pushState("", "", '?xFF=' + this.value);
             rElm.value = window.location.href;
         };
 
         if (qs[k]) {
-            console.log(q);
             iElm.value = qs[k];
             iElm.dispatchEvent(new Event('change'));
         }
